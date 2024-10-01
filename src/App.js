@@ -40,8 +40,16 @@ function decrementAttribute(character, attr) {
   }
 }
 
+function satisfyClassReq(character, classType) {
+  for (let attr of ATTRIBUTE_LIST) {
+    if (character.attributes[attr].val + character.attributes[attr].modifier < CLASS_LIST[classType][attr]) return false;
+  }
+  return true;
+}
+
 function App() {
   const [character, setCharacter] = useState(newCharacter());
+  const [showClass, setShowClass] = useState(null);
   return (
     <div className="App">
       <header className="App-header">
@@ -50,18 +58,38 @@ function App() {
       <section className="App-section">
         <div className='character'>
           <div className='card'>
+            <h2>Attributes</h2>
             {
-            ATTRIBUTE_LIST.map((attr) => {
-              return <AttributeControl
-                name={attr}
-                attribute={character.attributes[attr]}
-                onIncrement={()=> setCharacter(incrementAttribute(character, attr))}
-                onDecrement={()=> setCharacter(decrementAttribute(character, attr))}
-              />
+              ATTRIBUTE_LIST.map((attr) => {
+                return <AttributeControl
+                  name={attr}
+                  key={attr}
+                  attribute={character.attributes[attr]}
+                  onIncrement={()=> setCharacter(incrementAttribute(character, attr))}
+                  onDecrement={()=> setCharacter(decrementAttribute(character, attr))}
+                />
+              })
+            }
+          </div>
+          <div className='card'>
+            <h2>Classes</h2>
+          {
+            Object.keys(CLASS_LIST).map((classType) => {
+              return <div key={classType} onClick={()=>setShowClass(classType)} className={satisfyClassReq(character, classType) ? "" : "red"}>{classType}</div>
             })
           }
           </div>
-          <div className='card'>hii</div>
+          {showClass &&
+          <div className='card'>
+            <h2>{showClass} Minimum Requirement</h2>
+            {
+              Object.keys(CLASS_LIST[showClass]).map((attr) => {
+                return <div>{attr}: {CLASS_LIST[showClass][attr]}</div>;
+              })
+            }
+            <button onClick={()=>setShowClass(null)}>Close requirement window</button>
+          </div>
+          }
         </div>
       </section>
     </div>
