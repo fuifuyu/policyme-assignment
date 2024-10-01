@@ -32,6 +32,20 @@
   color: white;
 }
 
+.character {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.card {
+  padding: 1rem;
+  border-width: 2px;
+  border-color: #61dafb;
+  border-style: solid;
+  text-align: left;
+}
+
 .App-link {
   color: #61dafb;
 }
