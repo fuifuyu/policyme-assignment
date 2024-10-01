@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { SKILL_LIST } from "./consts";
 
-export default function SkillsCheck({onRoll}) {
+export default function SkillsCheck({title, onRoll}) {
   const [selectedSkill, setSelectedSkill] = useState(SKILL_LIST[0].name);
   const [dc, setDC] = useState(0);
   return (
     <div className="card">
-      <h2>Skills Check</h2>
+      <h2>{title}</h2>
       <div>
         <label htmlFor="skill-dropdown">Skill:</label>
         <select

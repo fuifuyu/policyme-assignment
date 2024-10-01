@@ -44,16 +44,34 @@ function App() {
       else setCharacters([newCharacter()]);
     })
   }, [])
+  console.log("check");
 
   const onRoll = (skill, dc) => {
     const message = characters.map((character, idx) => {
       const rand = Math.ceil(Math.random() * 20);
       const modifierName = SKILL_LIST.find(skillObj => skillObj.name === skill).attributeModifier;
       const skillPoints = character.skills[skill] + convertModifier(character.attributes[modifierName].modifier) + rand;
-      if (skillPoints >= dc) return `Skill check suceeded for Character ${idx + 1}! Rolled ${rand}`
-      else return `Skill check failed for Character ${idx + 1}.. Rolled ${rand}`
+      return `Character ${idx + 1} rolled ${rand}. Skill check ${skillPoints >= dc ? "suceeded!" : "failed..."}`
     });
     alert(message.join("\n"));
+  }
+
+  const onPartyRoll = (skill, dc) => {
+    const rand = Math.ceil(Math.random() * 20);
+    let bestIdx = 0;
+    let bestSkillPoints = 0;
+    for (let idx in characters) {
+      const character = characters[idx];
+      const modifierName = SKILL_LIST.find(skillObj => skillObj.name === skill).attributeModifier;
+      const skillPoints = character.skills[skill] + convertModifier(character.attributes[modifierName].modifier);
+      if (skillPoints > bestSkillPoints) {
+        bestSkillPoints = skillPoints;
+        bestIdx = idx;
+      }
+    }
+    let message = `Party skill check ${bestSkillPoints + rand >= dc ? "suceeded!": "failed..."}`;
+    message += `\nCharacter ${bestIdx+1} rolled ${rand}.`
+    alert(message);
   }
   
   return (
@@ -66,7 +84,8 @@ function App() {
           Loading...
         </section> :
         <section className="App-section">
-          <SkillsCheck onRoll={onRoll}/>
+          <SkillsCheck title="Skills Check" onRoll={onRoll}/>
+          <SkillsCheck title="Party Skills Check" onRoll={onPartyRoll}/>
           <button onClick={()=>saveCharacters(characters)}>Save</button>
           <button onClick={()=>setCharacters([...characters, newCharacter()])}>Add Character</button>
           {
