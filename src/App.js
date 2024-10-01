@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import './App.css';
 import { ATTRIBUTE_LIST, CLASS_LIST, SKILL_LIST } from './consts.js';
-import AttributeControl from './AttributeControl.js';
+import AttributeControl, { convertModifier } from './AttributeControl.js';
+import SkillControl from './SkillControl.js';
 
 
 function newCharacter() {
   let character = {
     attributes: {},
+    skills: {}
   };
   for (let attr of ATTRIBUTE_LIST) {
     character.attributes[attr] = {val: 10, modifier: 0};
+  }
+  for (let skill of SKILL_LIST) {
+    character.skills[skill.name] = 0
   }
   return character;
 }
@@ -40,6 +45,34 @@ function decrementAttribute(character, attr) {
   }
 }
 
+function incrementSkill(character, skill) {
+  const maxSkillPoint = 10 + 4 * convertModifier(character.attributes['Intelligence'].modifier);
+  let totalSkillPoint = 0;
+  for (let skillPoint of Object.values(character.skills)) {
+    totalSkillPoint += skillPoint;
+  }
+  if (totalSkillPoint >= maxSkillPoint) return character;
+
+  return {
+    ...character,
+    skills: {
+      ...character.skills,
+      [skill]: character.skills[skill] + 1
+    }
+  }
+}
+
+function decrementSkill(character, skill) {
+  if (character.skills[skill] === 0) return character;
+  return {
+    ...character,
+    skills: {
+      ...character.skills,
+      [skill]: character.skills[skill] - 1
+    }
+  }
+}
+
 function satisfyClassReq(character, classType) {
   for (let attr of ATTRIBUTE_LIST) {
     if (character.attributes[attr].val + character.attributes[attr].modifier < CLASS_LIST[classType][attr]) return false;
@@ -50,6 +83,7 @@ function satisfyClassReq(character, classType) {
 function App() {
   const [character, setCharacter] = useState(newCharacter());
   const [showClass, setShowClass] = useState(null);
+  
   return (
     <div className="App">
       <header className="App-header">
@@ -90,6 +124,19 @@ function App() {
             <button onClick={()=>setShowClass(null)}>Close requirement window</button>
           </div>
           }
+          <div className='card'>
+            <h2>Skills</h2>
+            {SKILL_LIST.map((skill) => {
+              const name = skill.name;
+              const attrName = skill.attributeModifier;
+              return <SkillControl
+                skill={{name: name, val: character.skills[name]}}
+                modifier={{name: attrName, val: character.attributes[attrName].modifier}}
+                onIncrement={() => setCharacter(incrementSkill(character, name))}
+                onDecrement={() => setCharacter(decrementSkill(character, name))}
+              />
+            })}
+          </div>
         </div>
       </section>
     </div>
