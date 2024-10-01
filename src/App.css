@@ -41,6 +41,7 @@
 
 .card {
   padding: 1rem;
+  margin: 0.5rem;
   border-width: 2px;
   border-color: #61dafb;
   border-style: solid;

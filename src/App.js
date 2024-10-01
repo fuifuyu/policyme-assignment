@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { ATTRIBUTE_LIST, SKILL_LIST } from './consts.js';
 import CharacterCard from './CharacterCard.js';
+import SkillsCheck from './SkillsCheck.js';
+import { convertModifier } from './AttributeControl.js';
 
 
 function newCharacter() {
@@ -42,6 +44,17 @@ function App() {
       else setCharacters([newCharacter()]);
     })
   }, [])
+
+  const onRoll = (skill, dc) => {
+    const message = characters.map((character, idx) => {
+      const rand = Math.ceil(Math.random() * 20);
+      const modifierName = SKILL_LIST.find(skillObj => skillObj.name === skill).attributeModifier;
+      const skillPoints = character.skills[skill] + convertModifier(character.attributes[modifierName].modifier) + rand;
+      if (skillPoints >= dc) return `Skill check suceeded for Character ${idx + 1}! Rolled ${rand}`
+      else return `Skill check failed for Character ${idx + 1}.. Rolled ${rand}`
+    });
+    alert(message.join("\n"));
+  }
   
   return (
     <div className="App">
@@ -53,6 +66,7 @@ function App() {
           Loading...
         </section> :
         <section className="App-section">
+          <SkillsCheck onRoll={onRoll}/>
           <button onClick={()=>saveCharacters(characters)}>Save</button>
           <button onClick={()=>setCharacters([...characters, newCharacter()])}>Add Character</button>
           {
