@@ -19,7 +19,7 @@ function newCharacter() {
 }
 
 
-function saveCharacter(character) {
+function saveCharacters(character) {
   fetch("https://recruiting.verylongdomaintotestwith.ca/api/fuifuyu/character", {
     method: "POST",
     body: JSON.stringify(character),
@@ -30,7 +30,7 @@ function saveCharacter(character) {
 }
 
 function App() {
-  const [character, setCharacter] = useState(null);
+  const [characters, setCharacters] = useState(null);
 
   useEffect(()=>{
     fetch("https://recruiting.verylongdomaintotestwith.ca/api/fuifuyu/character", {
@@ -38,8 +38,8 @@ function App() {
         'Accept': 'application/json'
       }
     }).then(res => res.json()).then(res => {
-      if (res.body !== undefined) setCharacter(res.body);
-      else setCharacter(newCharacter());
+      if (res.body !== undefined) setCharacters(res.body);
+      else setCharacters([newCharacter()]);
     })
   }, [])
   
@@ -48,13 +48,24 @@ function App() {
       <header className="App-header">
         <h1>React Coding Exercise</h1>
       </header>
-      {character === null ?
+      {characters === null ?
         <section className='App-section'>
           Loading...
         </section> :
         <section className="App-section">
-          <button onClick={()=>saveCharacter(character)}>Save</button>
-          <CharacterCard character={character} setCharacter={setCharacter}/>
+          <button onClick={()=>saveCharacters(characters)}>Save</button>
+          <button onClick={()=>setCharacters([...characters, newCharacter()])}>Add Character</button>
+          {
+            characters.map((character, idx) => {
+              return ( <>
+              <h2>Character {idx}</h2>
+              <CharacterCard character={character} setCharacter={(newCharacter)=> {
+                setCharacters(characters.map((c, i) => (idx === i) ? newCharacter : c))
+              }}/>
+              <button onClick={()=>{setCharacters(characters.filter((c, i) => i !== idx))}}>Delete Character</button>
+              </>);
+            })
+          }
         </section>
       }
     </div>
