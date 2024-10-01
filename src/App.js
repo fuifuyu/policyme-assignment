@@ -20,6 +20,13 @@ function newCharacter() {
 }
 
 function incrementAttribute(character, attr) {
+  const MAX_ATTRIBUTE = 70
+  let currentAttrPoints = 0;
+  for (let attr of ATTRIBUTE_LIST) {
+    currentAttrPoints += character.attributes[attr].val + character.attributes[attr].modifier;
+  }
+  if (currentAttrPoints >= MAX_ATTRIBUTE) return character;
+
   return {
     ...character,
     attributes: {
@@ -81,7 +88,6 @@ function satisfyClassReq(character, classType) {
 }
 
 function saveCharacter(character) {
-  console.log(character)
   fetch("https://recruiting.verylongdomaintotestwith.ca/api/fuifuyu/character", {
     method: "POST",
     body: JSON.stringify(character),
